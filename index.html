@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>VIP课程记录生成器</title>
+  <style>
+    body {
+      font-family: 'Microsoft YaHei', sans-serif;
+      padding: 30px;
+      background-color: #f7f9fb;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 40px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, textarea {
+      padding: 6px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 8px 16px;
+      font-size: 1rem;
+    }
+    #output {
+      margin-top: 30px;
+      white-space: pre-wrap;
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>VIP课程记录生成器</h2>
+
+  <label>预约日期：
+    <input type="date" id="date">
+  </label>
+
+  <script>
+    // 设置今天为默认日期
+    window.addEventListener("DOMContentLoaded", () => {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+    });
+  </script>
+<label>开始时间（小时 和 分钟）：
+  <select id="startHour">
+    <!-- 小时：08 - 21 -->
+    <script>
+      for (let h = 8; h <= 21; h++) {
+        document.write(`<option value="${String(h).padStart(2, '0')}">${String(h).padStart(2, '0')}</option>`);
+      }
+    </script>
+  </select>
+  ：
+  <select id="startMinute">
+    <option value="00">00</option>
+    <option value="05">05</option>
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+    <option value="25">25</option>
+    <option value="30">30</option>
+    <option value="35">35</option>
+    <option value="40">40</option>
+    <option value="45">45</option>
+    <option value="50">50</option>
+    <option value="55">55</option>
+  </select>
+</label>
+<label>课时：
+  <select id="duration">
+    <option value="120">2小时</option>
+    <option value="90">1.5小时</option>
+  </select>
+</label>
+<label>讲师：
+  <select id="teacher">
+    <option value="王梓同">王梓同</option>
+  </select>
+</label>
+<label>学生：
+  <select id="student">
+    <option value="李政伯">李政伯</option>
+    <option value="苏鹏宇">苏鹏宇</option>
+    <option value="闫可">闫可</option>
+  </select>
+</label>
+<label>授课内容：
+  <select id="content">
+    <option value="EJU化学">EJU化学</option>
+    <option value="EJU数学">EJU数学</option>
+  </select>
+</label>
+
+<button onclick="generateReservation()">生成预约记录</button>
+<button onclick="generateConclusion()">生成上课记录</button>
+
+<div id="output"></div>
+<button onclick="copyOutput()">复制</button>
+
+<script>
+function pad(n) {
+  return n.toString().padStart(2, '0');
+}
+
+function addMinutes(h, m, minsToAdd) {
+  const date = new Date();
+  date.setHours(h);
+  date.setMinutes(m + minsToAdd);
+  return pad(date.getHours()) + ":" + pad(date.getMinutes());
+}
+
+function getStartTime() {
+  const h = document.getElementById('startHour').value;
+  const m = document.getElementById('startMinute').value;
+  return `${h}:${m}`;
+}
+
+function generateReservation() {
+  const date = document.getElementById('date').value;
+  const [year, month, day] = date.split("-");
+  const h = parseInt(document.getElementById('startHour').value);
+  const m = parseInt(document.getElementById('startMinute').value);
+  const start = getStartTime();
+  const duration = parseInt(document.getElementById('duration').value);
+  const end = addMinutes(h, m, duration);
+  const teacher = document.getElementById('teacher').value;
+  const student = document.getElementById('student').value;
+  const content = document.getElementById('content').value;
+
+  const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
+
+  document.getElementById("output").innerText = reservation;
+  navigator.clipboard.writeText(reservation);
+}
+
+function generateConclusion() {
+  const date = document.getElementById('date').value;
+  const [year, month, day] = date.split("-");
+  const h = parseInt(document.getElementById('startHour').value);
+  const m = parseInt(document.getElementById('startMinute').value);
+  const start = getStartTime();
+  const duration = parseInt(document.getElementById('duration').value);
+  const end = addMinutes(h, m, duration);
+  const teacher = document.getElementById('teacher').value;
+  const student = document.getElementById('student').value;
+  const content = document.getElementById('content').value;
+
+  const hh = Math.floor(duration / 60);
+  const mm = duration % 60;
+  const durationText = `${hh}小时${mm > 0 ? mm + "分钟" : ""}`;
+
+  const conclusion = `VIP课程上课结束\n学生: ${student}\n讲师: ${teacher}\n上课时间: ${year}年${month}月${day}日 ${start} - ${end}（线下）\n所用时长: ${durationText}\n上课内容: ${content.toLowerCase()}\n@格致学苑-花花@小雪老师`;
+
+  document.getElementById("output").innerText = conclusion;
+  navigator.clipboard.writeText(conclusion);
+}
+  function copyOutput() {
+    const content = document.getElementById("output").innerText;
+   if (content.trim()) {
+      navigator.clipboard.writeText(content).then(() => {
+      alert("内容已复制到剪贴板！");
+     });
+   } else {
+     alert("没有可复制的内容！");
+   }
+  }
+</script>
+</body>
+</html>
