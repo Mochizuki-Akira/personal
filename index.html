@@ -11,48 +11,29 @@
     }
     h2 {
       color: #2c3e50;
-      margin-top: 20px;
+      margin-top: 40px;
     }
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 15px;
     }
-    select, input {
+    input, select, textarea {
       padding: 6px;
       margin-top: 5px;
     }
     button {
-      margin-top: 15px;
-      margin-right: 10px;
-      padding: 6px 16px;
+      margin-top: 20px;
+      padding: 8px 16px;
       font-size: 1rem;
     }
     #output {
       margin-top: 30px;
+      white-space: pre-wrap;
       background: #fff;
       padding: 15px;
       border: 1px solid #ccc;
+      width: 100%;
       max-width: 600px;
-      position: relative;
-    }
-    pre {
-      white-space: pre-wrap;
-      margin: 0;
-    }
-    #copyBtn {
-      margin-top: 10px;
-      padding: 5px 12px;
-    }
-    #toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #4caf50;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      display: none;
     }
   </style>
 </head>
@@ -65,11 +46,14 @@
 </label>
 
 <label>开始时间（小时 和 分钟）：
-  <select id="hour">
-    ${[...Array(11)].map((_, i) => `<option value="${10 + i}">${10 + i}</option>`).join('')}
-  </select>
-  ：
-  <select id="minute">
+  <select id="startHour">
+    <script>
+      for (let h = 8; h <= 21; h++) {
+        document.write(`<option value="${String(h).padStart(2, '0')}">${String(h).padStart(2, '0')}</option>`);
+      }
+    </script>
+  </select> ：
+  <select id="startMinute">
     <option value="00">00</option>
     <option value="05">05</option>
     <option value="10">10</option>
@@ -87,7 +71,7 @@
 
 <label>课时：
   <select id="duration">
-    <option value="120">2小时</option>
+    <option value="120" selected>2小时</option>
     <option value="90">1.5小时</option>
   </select>
 </label>
@@ -113,83 +97,119 @@
   </select>
 </label>
 
-<br>
 <button onclick="generateReservation()">生成预约记录</button>
 <button onclick="generateConclusion()">生成上课记录</button>
 
-<div id="output">
-  <pre id="textContent"></pre>
-  <button id="copyBtn" onclick="copyOutput()">复制</button>
-</div>
-
-<div id="toast">已复制到剪贴板！</div>
+<div id="output"></div>
+<button onclick="copyOutput()">复制</button>
 
 <script>
-function pad(n) {
-  return n.toString().padStart(2, '0');
-}
+  // 默认日期为今天
+  window.addEventListener("DOMContentLoaded", () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+  });
 
-function addMinutes(h, m, minsToAdd) {
-  const date = new Date();
-  date.setHours(h);
-  date.setMinutes(m + minsToAdd);
-  return [pad(date.getHours()), pad(date.getMinutes())];
-}
-
-function generateReservation() {
-  const date = document.getElementById('date').value;
-  const [year, month, day] = date.split("-");
-  const hour = parseInt(document.getElementById('hour').value);
-  const minute = parseInt(document.getElementById('minute').value);
-  const duration = parseInt(document.getElementById('duration').value);
-  const [endH, endM] = addMinutes(hour, minute, duration);
-  const teacher = document.getElementById('teacher').value;
-  const student = document.getElementById('student').value;
-  const content = document.getElementById('content').value;
-
-  const text = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${pad(hour)}:${pad(minute)} - ${endH}:${endM}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
-
-  document.getElementById("textContent").innerText = text;
-}
-
-function generateConclusion() {
-  const date = document.getElementById('date').value;
-  const [year, month, day] = date.split("-");
-  const hour = parseInt(document.getElementById('hour').value);
-  const minute = parseInt(document.getElementById('minute').value);
-  const duration = parseInt(document.getElementById('duration').value);
-  const [endH, endM] = addMinutes(hour, minute, duration);
-  const teacher = document.getElementById('teacher').value;
-  const student = document.getElementById('student').value;
-  const content = document.getElementById('content').value;
-
-  const h = Math.floor(duration / 60);
-  const m = duration % 60;
-  const durationText = `${h}小时${m > 0 ? m + "分钟" : ""}`;
-
-  const text = `VIP课程上课结束\n学生: ${student}\n讲师: ${teacher}\n上课时间: ${year}年${month}月${day}日 ${pad(hour)}:${pad(minute)} - ${endH}:${endM}（线下）\n所用时长: ${durationText}\n上课内容: ${content.toLowerCase()}\n课后作业: @格致学苑-花花@小雪老师`;
-
-  document.getElementById("textContent").innerText = text;
-}
-
-function copyOutput() {
-  const content = document.getElementById("textContent").innerText;
-  if (content.trim()) {
-    navigator.clipboard.writeText(content).then(() => {
-      const toast = document.getElementById("toast");
-      toast.style.display = "block";
-      setTimeout(() => toast.style.display = "none", 2000);
-    });
-  } else {
-    alert("没有可复制的内容！");
+  function pad(n) {
+    return n.toString().padStart(2, '0');
   }
-}
 
-// 设置默认日期为今天
-window.onload = () => {
-  const today = new Date();
-  document.getElementById("date").value = today.toISOString().split("T")[0];
-}
+  function addMinutes(h, m, minsToAdd) {
+    const date = new Date();
+    date.setHours(h);
+    date.setMinutes(m + minsToAdd);
+    return pad(date.getHours()) + ":" + pad(date.getMinutes());
+  }
+
+  function getStartTime() {
+    const h = document.getElementById('startHour').value;
+    const m = document.getElementById('startMinute').value;
+    return `${h}:${m}`;
+  }
+
+  function generateReservation() {
+    const date = document.getElementById('date').value;
+    const [year, month, day] = date.split("-");
+    const h = parseInt(document.getElementById('startHour').value);
+    const m = parseInt(document.getElementById('startMinute').value);
+    const start = getStartTime();
+    const duration = parseInt(document.getElementById('duration').value);
+    const end = addMinutes(h, m, duration);
+    const teacher = document.getElementById('teacher').value;
+    const student = document.getElementById('student').value;
+    const content = document.getElementById('content').value;
+
+    const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
+
+    document.getElementById("output").innerText = reservation;
+    navigator.clipboard.writeText(reservation);
+    showToast("✅ 预约记录已复制！");
+  }
+
+  function generateConclusion() {
+    const date = document.getElementById('date').value;
+    const [year, month, day] = date.split("-");
+    const h = parseInt(document.getElementById('startHour').value);
+    const m = parseInt(document.getElementById('startMinute').value);
+    const start = getStartTime();
+    const duration = parseInt(document.getElementById('duration').value);
+    const end = addMinutes(h, m, duration);
+    const teacher = document.getElementById('teacher').value;
+    const student = document.getElementById('student').value;
+    const content = document.getElementById('content').value;
+
+    const hh = Math.floor(duration / 60);
+    const mm = duration % 60;
+    const durationText = `${hh}小时${mm > 0 ? mm + "分钟" : ""}`;
+
+    const conclusion = `VIP课程上课结束\n学生: ${student}\n讲师: ${teacher}\n上课时间: ${year}年${month}月${day}日 ${start} - ${end}（线下）\n所用时长: ${durationText}\n上课内容: ${content.toLowerCase()}\n@格致学苑-花花@小雪老师`;
+
+    document.getElementById("output").innerText = conclusion;
+    navigator.clipboard.writeText(conclusion);
+    showToast("✅ 上课记录已复制！");
+  }
+
+  function copyOutput() {
+    const content = document.getElementById("output").innerText;
+    if (content.trim()) {
+      navigator.clipboard.writeText(content).then(() => {
+        showToast("✅ 内容已复制到剪贴板");
+      });
+    } else {
+      showToast("⚠️ 没有内容可复制");
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "30px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "#323232";
+    toast.style.color = "#fff";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "6px";
+    toast.style.fontSize = "14px";
+    toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.style.opacity = "1";
+    });
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      setTimeout(() => document.body.removeChild(toast), 300);
+    }, 2000);
+  }
 </script>
 
 </body>
