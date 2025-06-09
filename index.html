@@ -38,7 +38,7 @@
     }
   </style>
 </head>
-<body>
+<body onload="setToday()">
 
 <h2>VIP课程记录生成器</h2>
 
@@ -46,12 +46,25 @@
   <input type="date" id="date">
 </label>
 <label>开始时间：
-  <input type="time" id="startTime">
+  <select id="startHour"></select> : <select id="startMinute">
+    <option value="00">00</option>
+    <option value="05">05</option>
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+    <option value="25">25</option>
+    <option value="30">30</option>
+    <option value="35">35</option>
+    <option value="40">40</option>
+    <option value="45">45</option>
+    <option value="50">50</option>
+    <option value="55">55</option>
+  </select>
 </label>
 <label>课时：
   <select id="duration">
-    <option value="120">2小时</option>
     <option value="90">1.5小时</option>
+    <option value="120" selected>2小时</option>
   </select>
 </label>
 <label>讲师：
@@ -81,6 +94,22 @@
 <script>
 function pad(n) {
   return n.toString().padStart(2, '0');
+}
+
+function setToday() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = pad(today.getMonth() + 1);
+  const dd = pad(today.getDate());
+  document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+
+  const hourSelect = document.getElementById("startHour");
+  for (let i = 0; i < 24; i++) {
+    const opt = document.createElement("option");
+    opt.value = pad(i);
+    opt.textContent = pad(i);
+    hourSelect.appendChild(opt);
+  }
 }
 
 function addMinutes(time, minsToAdd) {
@@ -122,7 +151,7 @@ function showToast(message) {
 function generateReservation() {
   const date = document.getElementById('date').value;
   const [year, month, day] = date.split("-");
-  const start = document.getElementById('startTime').value;
+  const start = document.getElementById('startHour').value + ":" + document.getElementById('startMinute').value;
   const duration = parseInt(document.getElementById('duration').value);
   const end = addMinutes(start, duration);
   const teacher = document.getElementById('teacher').value;
@@ -140,7 +169,7 @@ function generateReservation() {
 function generateConclusion() {
   const date = document.getElementById('date').value;
   const [year, month, day] = date.split("-");
-  const start = document.getElementById('startTime').value;
+  const start = document.getElementById('startHour').value + ":" + document.getElementById('startMinute').value;
   const duration = parseInt(document.getElementById('duration').value);
   const end = addMinutes(start, duration);
   const teacher = document.getElementById('teacher').value;
