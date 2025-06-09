@@ -1,212 +1,117 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>VIP课程记录生成器</title>
+  <title>课程记录生成器</title>
   <style>
     body {
-      font-family: 'Microsoft YaHei', sans-serif;
-      padding: 30px;
-      background-color: #f7f9fb;
+      font-family: "Microsoft YaHei", sans-serif;
+      margin: 30px;
+      background-color: #f9f9f9;
     }
-    h2 {
-      color: #2c3e50;
-      margin-top: 40px;
-    }
-    label {
+    label, select, input, textarea, button {
       display: block;
-      margin-top: 15px;
+      margin: 10px 0;
+      font-size: 16px;
     }
-    input, select, textarea {
-      padding: 6px;
-      margin-top: 5px;
+    textarea {
+      width: 100%;
+      height: 150px;
     }
     button {
-      margin-top: 20px;
       padding: 8px 16px;
-      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-    #output {
-      margin-top: 30px;
-      white-space: pre-wrap;
-      background: #fff;
-      padding: 15px;
-      border: 1px solid #ccc;
-      width: 100%;
-      max-width: 600px;
+    button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
+  <h1>课程记录内容生成器</h1>
 
-<h2>VIP课程记录生成器</h2>
+  <label for="date">日期：</label>
+  <input type="date" id="date">
 
-  <label>预约日期：
-    <input type="date" id="date">
-  </label>
+  <label for="time">上课时间：</label>
+  <input type="text" id="time" placeholder="例如 19:00 - 20:30">
+
+  <label for="topic">授课内容：</label>
+  <input type="text" id="topic">
+
+  <label for="material">资料路径：</label>
+  <input type="text" id="material" placeholder="例如 materials/20240601.pdf">
+
+  <label for="upload">上传时间：</label>
+  <input type="text" id="upload" placeholder="例如 2024/06/01 21:10">
+
+  <button onclick="generateContent()">生成课程记录</button>
+  <button onclick="copyContent()">复制生成内容</button>
+
+  <h2>生成结果：</h2>
+  <textarea id="output" readonly></textarea>
 
   <script>
-    // 设置今天为默认日期
-    window.addEventListener("DOMContentLoaded", () => {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
-    });
-  </script>
-<label>开始时间（小时 和 分钟）：
-  <select id="startHour">
-    <!-- 小时：08 - 21 -->
-    <script>
-      for (let h = 8; h <= 21; h++) {
-        document.write(`<option value="${String(h).padStart(2, '0')}">${String(h).padStart(2, '0')}</option>`);
+    function generateContent() {
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const topic = document.getElementById("topic").value;
+      const material = document.getElementById("material").value;
+      const upload = document.getElementById("upload").value;
+
+      const result = `{
+  date: \"${date}\",
+  time: \"${time}\",
+  content: \"${topic}\",
+  material: \"${material}\",
+  upload: \"${upload}\"
+},`;
+
+      document.getElementById("output").value = result;
+    }
+
+    function copyContent() {
+      const content = document.getElementById("output").value;
+      if (content.trim()) {
+        navigator.clipboard.writeText(content).then(() => {
+          showToast("✅ 已复制到剪贴板");
+        });
+      } else {
+        showToast("⚠️ 没有内容可复制");
       }
-    </script>
-  </select>
-  ：
-  <select id="startMinute">
-    <option value="00">00</option>
-    <option value="05">05</option>
-    <option value="10">10</option>
-    <option value="15">15</option>
-    <option value="20">20</option>
-    <option value="25">25</option>
-    <option value="30">30</option>
-    <option value="35">35</option>
-    <option value="40">40</option>
-    <option value="45">45</option>
-    <option value="50">50</option>
-    <option value="55">55</option>
-  </select>
-</label>
-<label>课时：
-  <select id="duration">
-    <option value="120">2小时</option>
-    <option value="90">1.5小时</option>
-  </select>
-</label>
-<label>讲师：
-  <select id="teacher">
-    <option value="王梓同">王梓同</option>
-  </select>
-</label>
-<label>学生：
-  <select id="student">
-    <option value="李政伯">李政伯</option>
-    <option value="苏鹏宇">苏鹏宇</option>
-    <option value="闫可">闫可</option>
-  </select>
-</label>
-<label>授课内容：
-  <select id="content">
-    <option value="EJU化学">EJU化学</option>
-    <option value="EJU数学">EJU数学</option>
-  </select>
-</label>
+    }
 
-<button onclick="generateReservation()">生成预约记录</button>
-<button onclick="generateConclusion()">生成上课记录</button>
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.textContent = message;
+      toast.style.position = "fixed";
+      toast.style.bottom = "30px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.backgroundColor = "#323232";
+      toast.style.color = "#fff";
+      toast.style.padding = "10px 20px";
+      toast.style.borderRadius = "6px";
+      toast.style.fontSize = "14px";
+      toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.3s";
 
-<div id="output"></div>
-<button onclick="copyOutput()">复制</button>
+      document.body.appendChild(toast);
 
-<script>
-function pad(n) {
-  return n.toString().padStart(2, '0');
-}
+      requestAnimationFrame(() => {
+        toast.style.opacity = "1";
+      });
 
-function addMinutes(h, m, minsToAdd) {
-  const date = new Date();
-  date.setHours(h);
-  date.setMinutes(m + minsToAdd);
-  return pad(date.getHours()) + ":" + pad(date.getMinutes());
-}
-
-function getStartTime() {
-  const h = document.getElementById('startHour').value;
-  const m = document.getElementById('startMinute').value;
-  return `${h}:${m}`;
-}
-
-function generateReservation() {
-  const date = document.getElementById('date').value;
-  const [year, month, day] = date.split("-");
-  const h = parseInt(document.getElementById('startHour').value);
-  const m = parseInt(document.getElementById('startMinute').value);
-  const start = getStartTime();
-  const duration = parseInt(document.getElementById('duration').value);
-  const end = addMinutes(h, m, duration);
-  const teacher = document.getElementById('teacher').value;
-  const student = document.getElementById('student').value;
-  const content = document.getElementById('content').value;
-
-  const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
-
-  document.getElementById("output").innerText = reservation;
-  navigator.clipboard.writeText(reservation);
-}
-
-function generateConclusion() {
-  const date = document.getElementById('date').value;
-  const [year, month, day] = date.split("-");
-  const h = parseInt(document.getElementById('startHour').value);
-  const m = parseInt(document.getElementById('startMinute').value);
-  const start = getStartTime();
-  const duration = parseInt(document.getElementById('duration').value);
-  const end = addMinutes(h, m, duration);
-  const teacher = document.getElementById('teacher').value;
-  const student = document.getElementById('student').value;
-  const content = document.getElementById('content').value;
-
-  const hh = Math.floor(duration / 60);
-  const mm = duration % 60;
-  const durationText = `${hh}小时${mm > 0 ? mm + "分钟" : ""}`;
-
-  const conclusion = `VIP课程上课结束\n学生: ${student}\n讲师: ${teacher}\n上课时间: ${year}年${month}月${day}日 ${start} - ${end}（线下）\n所用时长: ${durationText}\n上课内容: ${content.toLowerCase()}\n@格致学苑-花花@小雪老师`;
-
-  document.getElementById("output").innerText = conclusion;
-  navigator.clipboard.writeText(conclusion);
-}
-  function copyOutput() {
-    const content = document.getElementById("output").innerText;
-   if (content.trim()) {
-  navigator.clipboard.writeText(content).then(() => {
-    showToast("✅ 已复制到剪贴板");
-  });
-} else {
-  showToast("⚠️ 没有内容可复制");
-}
-
-// 请同时确保这段函数定义也加进去了（建议放在 <script> 末尾）
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.position = "fixed";
-  toast.style.bottom = "30px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-  toast.style.backgroundColor = "#323232";
-  toast.style.color = "#fff";
-  toast.style.padding = "10px 20px";
-  toast.style.borderRadius = "6px";
-  toast.style.fontSize = "14px";
-  toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
-  toast.style.opacity = "0";
-  toast.style.transition = "opacity 0.3s";
-
-  document.body.appendChild(toast);
-
-  requestAnimationFrame(() => {
-    toast.style.opacity = "1";
-  });
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => document.body.removeChild(toast), 300);
-  }, 2000);
-}
-  }
-</script>
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
