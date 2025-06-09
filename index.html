@@ -37,6 +37,15 @@
       border: 1px solid #ccc;
       width: 100%;
       max-width: 600px;
+      position: relative;
+    }
+    #copyBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      padding: 4px 8px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -91,7 +100,7 @@
 <button onclick="generateReservation()">生成预约记录</button>
 <button onclick="generateConclusion()">生成上课记录</button>
 
-<div id="output"></div>
+<div id="output"><button id="copyBtn" onclick="copyOutput()">复制</button></div>
 
 <script>
 function pad(n) {
@@ -110,7 +119,6 @@ function setToday() {
     const opt = document.createElement("option");
     opt.value = pad(i);
     opt.textContent = pad(i);
-    
     hourSelect.appendChild(opt);
   }
 }
@@ -164,6 +172,7 @@ function generateReservation() {
   const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
 
   document.getElementById("output").innerText = reservation;
+  document.getElementById("output").appendChild(document.getElementById("copyBtn"));
   navigator.clipboard.writeText(reservation).then(() => {
     showToast("✅ 预约记录已复制");
   });
@@ -186,9 +195,21 @@ function generateConclusion() {
   const conclusion = `VIP课程上课结束\n学生: ${student}\n讲师: ${teacher}\n上课时间: ${year}年${month}月${day}日 ${start} - ${end}（线下）\n所用时长: ${durationText}\n上课内容: ${content.toLowerCase()}\n课后作业: @格致学苑-花花@小雪老师`;
 
   document.getElementById("output").innerText = conclusion;
+  document.getElementById("output").appendChild(document.getElementById("copyBtn"));
   navigator.clipboard.writeText(conclusion).then(() => {
     showToast("✅ 上课记录已复制");
   });
+}
+
+function copyOutput() {
+  const content = document.getElementById("output").innerText;
+  if (content.trim()) {
+    navigator.clipboard.writeText(content).then(() => {
+      showToast("✅ 内容已复制");
+    });
+  } else {
+    showToast("⚠️ 没有可复制的内容");
+  }
 }
 </script>
 
