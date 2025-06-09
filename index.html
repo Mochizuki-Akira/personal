@@ -18,9 +18,11 @@
       margin-top: 15px;
     }
     input, select, textarea {
-      width: 300px;
       padding: 6px;
       margin-top: 5px;
+    }
+    select.time {
+      width: 80px;
     }
     button {
       margin-top: 20px;
@@ -46,7 +48,7 @@
   <input type="date" id="date">
 </label>
 <label>开始时间：
-  <select id="startHour"></select> : <select id="startMinute">
+  <select id="startHour" class="time"></select> : <select id="startMinute" class="time">
     <option value="00">00</option>
     <option value="05">05</option>
     <option value="10">10</option>
@@ -104,10 +106,11 @@ function setToday() {
   document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
 
   const hourSelect = document.getElementById("startHour");
-  for (let i = 0; i < 24; i++) {
+  for (let i = 10; i <= 20; i++) {
     const opt = document.createElement("option");
     opt.value = pad(i);
     opt.textContent = pad(i);
+    
     hourSelect.appendChild(opt);
   }
 }
