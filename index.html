@@ -184,7 +184,6 @@
   }
 
   function showToast(message) {
-  // 如果已有 toast，则先移除（避免多个叠加）
   const existing = document.querySelector('.custom-toast');
   if (existing) existing.remove();
 
@@ -192,23 +191,27 @@
   toast.textContent = message;
   toast.className = "custom-toast";
 
-  // 添加样式
   Object.assign(toast.style, {
     position: "fixed",
-    bottom: "0",                    // 贴住屏幕最底部
-    left: "0",
-    width: "100vw",                // 占满整个屏幕宽度
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     backgroundColor: "#323232",
     color: "#fff",
-    padding: "14px 20px",
+    padding: "16px 24px",
     fontSize: "16px",
     textAlign: "center",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
     zIndex: "10000",
     opacity: "0",
-    transition: "opacity 0.3s",
+    transition: "opacity 0.3s ease",
+    maxWidth: "80%",
+    wordBreak: "break-word"
   });
 
   document.body.appendChild(toast);
+
   requestAnimationFrame(() => {
     toast.style.opacity = "1";
   });
