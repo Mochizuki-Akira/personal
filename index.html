@@ -177,7 +177,7 @@
           <div>
             <label>学生：
               <select id="student">
-                <option value="厉家麒">厉家麒</option>
+                
                 <option value="苏鹏宇">苏鹏宇</option>
                 <option value="文婉蓉">文婉蓉</option>
               </select>
@@ -304,7 +304,7 @@
       const student = document.getElementById('student').value;
       const content = document.getElementById('content').value;
 
-      const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@格致学苑-花花@小雪老师`;
+      const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@vip学管1号(vip学管1号) `;
 
       document.getElementById("output").innerText = reservation;
       navigator.clipboard.writeText(reservation).then(()=> {
