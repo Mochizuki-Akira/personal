@@ -166,6 +166,16 @@
             </label>
           </div>
 
+          <!-- ✅ 新增：上课形式（线上/线下） -->
+          <div>
+            <label>上课形式：
+              <select id="lessonType">
+                <option value="线下课" selected>线下课</option>
+                <option value="线上课">线上课</option>
+              </select>
+            </label>
+          </div>
+
           <div>
             <label>讲师：
               <select id="teacher">
@@ -177,7 +187,6 @@
           <div>
             <label>学生：
               <select id="student">
-                
                 <option value="朱鸿霖">朱鸿霖</option>
                 <option value=""></option>
               </select>
@@ -300,16 +309,20 @@
       const start = getStartTime();
       const duration = parseInt(document.getElementById('duration').value);
       const end = addMinutes(h, m, duration);
+
+      // ✅ 新增：上课形式
+      const lessonType = document.getElementById('lessonType').value;
+
       const teacher = document.getElementById('teacher').value;
       const student = document.getElementById('student').value;
       const content = document.getElementById('content').value;
 
-      const reservation = `VIP课程预约\n线下课\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@vip学管1号(vip学管1号) `;
+      const reservation = `VIP课程预约\n${lessonType}\n预约时间: ${year}年${month}月${day}日 ${start} - ${end}\n讲师: ${teacher}\n学生: ${student}\n授课内容: ${content}\n@vip学管1号(vip学管1号) `;
 
       document.getElementById("output").innerText = reservation;
-      navigator.clipboard.writeText(reservation).then(()=> {
+      navigator.clipboard.writeText(reservation).then(() => {
         showToast("✅ 预约记录已复制！");
-      }).catch(()=> {
+      }).catch(() => {
         showToast("⚠️ 复制失败：请手动复制");
       });
     }
@@ -328,9 +341,9 @@
       const text = `课程反馈\n${dateDot}\n授课老师：${teacher}\n授课内容：${content}\n下节课内容：${next}\n作业：${hw}`;
 
       document.getElementById('classOutput').innerText = text;
-      navigator.clipboard.writeText(text).then(()=> {
+      navigator.clipboard.writeText(text).then(() => {
         showToast("✅ 班课记录已复制！");
-      }).catch(()=> {
+      }).catch(() => {
         showToast("⚠️ 复制失败：请手动复制");
       });
     }
@@ -340,7 +353,7 @@
       if (content.trim()) {
         navigator.clipboard.writeText(content).then(() => {
           showToast("✅ 内容已复制到剪贴板");
-        }).catch(()=> {
+        }).catch(() => {
           showToast("⚠️ 复制失败：请手动复制");
         });
       } else {
@@ -353,7 +366,7 @@
       if (content.trim()) {
         navigator.clipboard.writeText(content).then(() => {
           showToast("✅ 内容已复制到剪贴板");
-        }).catch(()=> {
+        }).catch(() => {
           showToast("⚠️ 复制失败：请手动复制");
         });
       } else {
